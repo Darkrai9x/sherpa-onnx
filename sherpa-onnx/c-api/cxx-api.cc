@@ -14,6 +14,7 @@
 
 namespace sherpa_onnx::cxx {
 
+#if SHERPA_ONNX_ENABLE_DENOISER == 1
 static void FillSpeechDenoiserModelConfig(
     const OfflineSpeechDenoiserModelConfig &src,
     SherpaOnnxOfflineSpeechDenoiserModelConfig *dst) {
@@ -24,6 +25,7 @@ static void FillSpeechDenoiserModelConfig(
   dst->provider = src.provider.c_str();
   dst->debug = src.debug;
 }
+#endif  // SHERPA_ONNX_ENABLE_DENOISER
 
 Wave ReadWave(const std::string &filename) {
   auto p = SherpaOnnxReadWave(filename.c_str());
@@ -74,6 +76,7 @@ int32_t OnlineStream::HasOption(const char *key) const {
   return SherpaOnnxOnlineStreamHasOption(p_, key);
 }
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
 OnlineRecognizer OnlineRecognizer::Create(
     const OnlineRecognizerConfig &config) {
   struct SherpaOnnxOnlineRecognizerConfig c;
@@ -211,6 +214,7 @@ OnlineRecognizerResult OnlineRecognizer::GetResult(
 
   return ans;
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR
 
 // ============================================================================
 // Non-streaming ASR
@@ -239,6 +243,7 @@ int32_t OfflineStream::HasOption(const char *key) const {
   return SherpaOnnxOfflineStreamHasOption(p_, key);
 }
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
 static SherpaOnnxOfflineRecognizerConfig Convert(
     const OfflineRecognizerConfig &config) {
   struct SherpaOnnxOfflineRecognizerConfig c;
@@ -483,7 +488,9 @@ std::shared_ptr<OfflineRecognizerResult> OfflineRecognizer::GetResultPtr(
   auto r = GetResult(s);
   return std::make_shared<OfflineRecognizerResult>(r);
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR
 
+#if SHERPA_ONNX_ENABLE_TTS == 1
 OfflineTts OfflineTts::Create(const OfflineTtsConfig &config) {
   struct SherpaOnnxOfflineTtsConfig c;
   memset(&c, 0, sizeof(c));
@@ -668,7 +675,9 @@ std::shared_ptr<GeneratedAudio> OfflineTts::Generate2(
 
   return std::shared_ptr<GeneratedAudio>(ans);
 }
+#endif  // SHERPA_ONNX_ENABLE_TTS
 
+#if SHERPA_ONNX_ENABLE_KWS == 1
 KeywordSpotter KeywordSpotter::Create(const KeywordSpotterConfig &config) {
   struct SherpaOnnxKeywordSpotterConfig c;
   memset(&c, 0, sizeof(c));
@@ -782,11 +791,13 @@ KeywordResult KeywordSpotter::GetResult(const OnlineStream *s) const {
 void KeywordSpotter::Reset(const OnlineStream *s) const {
   SherpaOnnxResetKeywordStream(p_, s->Get());
 }
+#endif  // SHERPA_ONNX_ENABLE_KWS
 
 // ============================================================
 // For Offline Speech Enhancement
 // ============================================================
 
+#if SHERPA_ONNX_ENABLE_DENOISER == 1
 OfflineSpeechDenoiser OfflineSpeechDenoiser::Create(
     const OfflineSpeechDenoiserConfig &config) {
   struct SherpaOnnxOfflineSpeechDenoiserConfig c;
@@ -881,6 +892,7 @@ int32_t OnlineSpeechDenoiser::GetSampleRate() const {
 int32_t OnlineSpeechDenoiser::GetFrameShiftInSamples() const {
   return SherpaOnnxOnlineSpeechDenoiserGetFrameShiftInSamples(p_);
 }
+#endif  // SHERPA_ONNX_ENABLE_DENOISER
 
 CircularBuffer CircularBuffer::Create(int32_t capacity) {
   auto p = SherpaOnnxCreateCircularBuffer(capacity);
@@ -1059,6 +1071,7 @@ bool FileExists(const std::string &filename) {
 // ============================================================
 // For Offline Punctuation
 // ============================================================
+#if SHERPA_ONNX_ENABLE_PUNCTUATION == 1
 OfflinePunctuation OfflinePunctuation::Create(
     const OfflinePunctuationConfig &config) {
   struct SherpaOnnxOfflinePunctuationConfig c;
@@ -1120,10 +1133,12 @@ std::string OnlinePunctuation::AddPunctuation(const std::string &text) const {
   SherpaOnnxOnlinePunctuationFreeText(result);
   return ans;
 }
+#endif  // SHERPA_ONNX_ENABLE_PUNCTUATION
 
 // ============================================================
 // For Audio tagging
 // ============================================================
+#if SHERPA_ONNX_ENABLE_AUDIO_TAGGING == 1
 AudioTagging AudioTagging::Create(const AudioTaggingConfig &config) {
   struct SherpaOnnxAudioTaggingConfig c;
   memset(&c, 0, sizeof(c));
@@ -1177,11 +1192,13 @@ std::shared_ptr<std::vector<AudioEvent>> AudioTagging::ComputePtr(
   auto events = Compute(s, top_k);
   return std::make_shared<std::vector<AudioEvent>>(events);
 }
+#endif  // SHERPA_ONNX_ENABLE_AUDIO_TAGGING
 
 // ============================================================
 // For Source Separation
 // ============================================================
 
+#if SHERPA_ONNX_ENABLE_SOURCE_SEPARATION == 1
 static void FillSourceSeparationModelConfig(
     const OfflineSourceSeparationModelConfig &src,
     SherpaOnnxOfflineSourceSeparationModelConfig *dst) {
@@ -1245,11 +1262,13 @@ int32_t OfflineSourceSeparation::GetOutputSampleRate() const {
 int32_t OfflineSourceSeparation::GetNumberOfStems() const {
   return SherpaOnnxOfflineSourceSeparationGetNumberOfStems(p_);
 }
+#endif  // SHERPA_ONNX_ENABLE_SOURCE_SEPARATION
 
 // ============================================================================
 // Spoken Language Identification
 // ============================================================================
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
 SpokenLanguageIdentification SpokenLanguageIdentification::Create(
     const SpokenLanguageIdentificationConfig &config) {
   struct SherpaOnnxSpokenLanguageIdentificationConfig c;
@@ -1293,11 +1312,13 @@ SpokenLanguageIdentificationResult SpokenLanguageIdentification::Compute(
   SherpaOnnxDestroySpokenLanguageIdentificationResult(r);
   return ans;
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR
 
 // ============================================================================
 // Speaker Embedding Extractor
 // ============================================================================
 
+#if SHERPA_ONNX_ENABLE_SPEAKER_ID == 1
 SpeakerEmbeddingExtractor SpeakerEmbeddingExtractor::Create(
     const SpeakerEmbeddingExtractorConfig &config) {
   struct SherpaOnnxSpeakerEmbeddingExtractorConfig c;
@@ -1440,11 +1461,13 @@ std::vector<std::string> SpeakerEmbeddingManager::GetAllSpeakers() const {
   }
   return ans;
 }
+#endif  // SHERPA_ONNX_ENABLE_SPEAKER_ID
 
 // ============================================================================
 // Offline Speaker Diarization
 // ============================================================================
 
+#if SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION == 1
 static int32_t DiarizationProgressCallback(int32_t num_processed_chunks,
                                            int32_t num_total_chunks,
                                            void *arg) {
@@ -1551,5 +1574,6 @@ OfflineSpeakerDiarization::Process(
   }
   return ans;
 }
+#endif  // SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION
 
 }  // namespace sherpa_onnx::cxx

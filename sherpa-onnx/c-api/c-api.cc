@@ -18,23 +18,11 @@
 #include "rawfile/raw_file_manager.h"
 #endif
 
-#include "sherpa-onnx/csrc/audio-tagging.h"
 #include "sherpa-onnx/csrc/circular-buffer.h"
 #include "sherpa-onnx/csrc/display.h"
 #include "sherpa-onnx/csrc/file-utils.h"
-#include "sherpa-onnx/csrc/keyword-spotter.h"
 #include "sherpa-onnx/csrc/macros.h"
-#include "sherpa-onnx/csrc/offline-punctuation.h"
-#include "sherpa-onnx/csrc/offline-recognizer.h"
-#include "sherpa-onnx/csrc/offline-source-separation.h"
-#include "sherpa-onnx/csrc/offline-speech-denoiser.h"
-#include "sherpa-onnx/csrc/online-punctuation.h"
-#include "sherpa-onnx/csrc/online-recognizer.h"
-#include "sherpa-onnx/csrc/online-speech-denoiser.h"
 #include "sherpa-onnx/csrc/resample.h"
-#include "sherpa-onnx/csrc/speaker-embedding-extractor.h"
-#include "sherpa-onnx/csrc/speaker-embedding-manager.h"
-#include "sherpa-onnx/csrc/spoken-language-identification.h"
 #include "sherpa-onnx/csrc/text-utils.h"
 #include "sherpa-onnx/csrc/version.h"
 #include "sherpa-onnx/csrc/voice-activity-detector.h"
@@ -45,14 +33,48 @@
 #include "sherpa-onnx/csrc/offline-tts.h"
 #endif
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
+#include "sherpa-onnx/csrc/offline-recognizer.h"
+#include "sherpa-onnx/csrc/online-recognizer.h"
+#include "sherpa-onnx/csrc/spoken-language-identification.h"
+#endif
+
 #if SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION == 1
 #include "sherpa-onnx/csrc/offline-speaker-diarization.h"
+#endif
+
+#if SHERPA_ONNX_ENABLE_AUDIO_TAGGING == 1
+#include "sherpa-onnx/csrc/audio-tagging.h"
+#endif
+
+#if SHERPA_ONNX_ENABLE_KWS == 1
+#include "sherpa-onnx/csrc/keyword-spotter.h"
+#endif
+
+#if SHERPA_ONNX_ENABLE_PUNCTUATION == 1
+#include "sherpa-onnx/csrc/offline-punctuation.h"
+#include "sherpa-onnx/csrc/online-punctuation.h"
+#endif
+
+#if SHERPA_ONNX_ENABLE_DENOISER == 1
+#include "sherpa-onnx/csrc/offline-speech-denoiser.h"
+#include "sherpa-onnx/csrc/online-speech-denoiser.h"
+#endif
+
+#if SHERPA_ONNX_ENABLE_SPEAKER_ID == 1
+#include "sherpa-onnx/csrc/speaker-embedding-extractor.h"
+#include "sherpa-onnx/csrc/speaker-embedding-manager.h"
+#endif
+
+#if SHERPA_ONNX_ENABLE_SOURCE_SEPARATION == 1
+#include "sherpa-onnx/csrc/offline-source-separation.h"
 #endif
 
 const char *SherpaOnnxGetVersionStr() { return sherpa_onnx::GetVersionStr(); }
 const char *SherpaOnnxGetGitSha1() { return sherpa_onnx::GetGitSha1(); }
 const char *SherpaOnnxGetGitDate() { return sherpa_onnx::GetGitDate(); }
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
 struct SherpaOnnxOnlineRecognizer {
   std::unique_ptr<sherpa_onnx::OnlineRecognizer> impl;
 };
@@ -62,6 +84,7 @@ struct SherpaOnnxOnlineStream {
   explicit SherpaOnnxOnlineStream(std::unique_ptr<sherpa_onnx::OnlineStream> p)
       : impl(std::move(p)) {}
 };
+#endif  // SHERPA_ONNX_ENABLE_ASR == 1
 
 struct SherpaOnnxDisplay {
   std::unique_ptr<sherpa_onnx::Display> impl;
@@ -69,6 +92,7 @@ struct SherpaOnnxDisplay {
 
 #define SHERPA_ONNX_OR(x, y) (x ? x : y)
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
 static sherpa_onnx::OnlineRecognizerConfig GetOnlineRecognizerConfig(
     const SherpaOnnxOnlineRecognizerConfig *config) {
   sherpa_onnx::OnlineRecognizerConfig recognizer_config;
@@ -947,7 +971,9 @@ void SherpaOnnxDestroyOfflineStreamResultJson(const char *s) {
   if (!s) return;
   delete[] s;
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR == 1
 
+#if SHERPA_ONNX_ENABLE_KWS == 1
 // ============================================================
 // For Keyword Spot
 // ============================================================
@@ -1191,6 +1217,7 @@ void SherpaOnnxFreeKeywordResultJson(const char *s) {
   if (!s) return;
   delete[] s;
 }
+#endif  // SHERPA_ONNX_ENABLE_KWS == 1
 
 // ============================================================
 // For VAD
@@ -2125,6 +2152,7 @@ void SherpaOnnxFreeMultiChannelWave(const SherpaOnnxMultiChannelWave *wave) {
   }
 }
 
+#if SHERPA_ONNX_ENABLE_ASR == 1
 struct SherpaOnnxSpokenLanguageIdentification {
   std::unique_ptr<sherpa_onnx::SpokenLanguageIdentification> impl;
 };
@@ -2200,6 +2228,9 @@ void SherpaOnnxDestroySpokenLanguageIdentificationResult(
     delete r;
   }
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR == 1
+
+#if SHERPA_ONNX_ENABLE_SPEAKER_ID == 1
 
 struct SherpaOnnxSpeakerEmbeddingExtractor {
   std::unique_ptr<sherpa_onnx::SpeakerEmbeddingExtractor> impl;
@@ -2459,6 +2490,10 @@ void SherpaOnnxSpeakerEmbeddingManagerFreeAllSpeakers(
   delete[] names;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_SPEAKER_ID == 1
+
+#if SHERPA_ONNX_ENABLE_AUDIO_TAGGING == 1
+
 struct SherpaOnnxAudioTagging {
   std::unique_ptr<sherpa_onnx::AudioTagging> impl;
 };
@@ -2554,6 +2589,10 @@ void SherpaOnnxAudioTaggingFreeResults(
 
   delete[] events;
 }
+
+#endif  // SHERPA_ONNX_ENABLE_AUDIO_TAGGING == 1
+
+#if SHERPA_ONNX_ENABLE_PUNCTUATION == 1
 
 struct SherpaOnnxOfflinePunctuation {
   std::unique_ptr<sherpa_onnx::OfflinePunctuation> impl;
@@ -2699,6 +2738,8 @@ void SherpaOnnxOnlinePunctuationFreeText(const char *text) {
   delete[] text;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_PUNCTUATION == 1
+
 struct SherpaOnnxLinearResampler {
   std::unique_ptr<sherpa_onnx::LinearResample> impl;
 };
@@ -2779,6 +2820,8 @@ void SherpaOnnxLinearResamplerReset(const SherpaOnnxLinearResampler *p) {
 int32_t SherpaOnnxFileExists(const char *filename) {
   return sherpa_onnx::FileExists(filename);
 }
+
+#if SHERPA_ONNX_ENABLE_DENOISER == 1
 
 struct SherpaOnnxOfflineSpeechDenoiser {
   std::unique_ptr<sherpa_onnx::OfflineSpeechDenoiser> impl;
@@ -2877,9 +2920,13 @@ void SherpaOnnxDestroyDenoisedAudio(const SherpaOnnxDenoisedAudio *p) {
   delete p;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_DENOISER == 1
+
 // =========================================================================
 // Source separation
 // =========================================================================
+
+#if SHERPA_ONNX_ENABLE_SOURCE_SEPARATION == 1
 
 struct SherpaOnnxOfflineSourceSeparation {
   std::unique_ptr<sherpa_onnx::OfflineSourceSeparation> impl;
@@ -3001,6 +3048,10 @@ void SherpaOnnxDestroySourceSeparationOutput(
   delete p;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_SOURCE_SEPARATION == 1
+
+#if SHERPA_ONNX_ENABLE_DENOISER == 1
+
 struct SherpaOnnxOnlineSpeechDenoiser {
   std::unique_ptr<sherpa_onnx::OnlineSpeechDenoiser> impl;
 };
@@ -3110,6 +3161,8 @@ void SherpaOnnxOnlineSpeechDenoiserReset(
 
   sd->impl->Reset();
 }
+
+#endif  // SHERPA_ONNX_ENABLE_DENOISER == 1
 
 #if SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION == 1
 
@@ -3391,6 +3444,8 @@ void SherpaOnnxOfflineSpeakerDiarizationDestroyResult(
 
 #ifdef __OHOS__
 
+#if SHERPA_ONNX_ENABLE_DENOISER == 1
+
 const SherpaOnnxOfflineSpeechDenoiser *
 SherpaOnnxCreateOfflineSpeechDenoiserOHOS(
     const SherpaOnnxOfflineSpeechDenoiserConfig *config,
@@ -3433,6 +3488,9 @@ const SherpaOnnxOnlineSpeechDenoiser *SherpaOnnxCreateOnlineSpeechDenoiserOHOS(
   return sd;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_DENOISER == 1
+
+#if SHERPA_ONNX_ENABLE_ASR == 1
 const SherpaOnnxOnlineRecognizer *SherpaOnnxCreateOnlineRecognizerOHOS(
     const SherpaOnnxOnlineRecognizerConfig *config,
     NativeResourceManager *mgr) {
@@ -3450,6 +3508,9 @@ const SherpaOnnxOnlineRecognizer *SherpaOnnxCreateOnlineRecognizerOHOS(
 
   return recognizer;
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR == 1
+
+#if SHERPA_ONNX_ENABLE_PUNCTUATION == 1
 
 const SherpaOnnxOnlinePunctuation *SherpaOnnxCreateOnlinePunctuationOHOS(
     const SherpaOnnxOnlinePunctuationConfig *config,
@@ -3469,6 +3530,9 @@ const SherpaOnnxOnlinePunctuation *SherpaOnnxCreateOnlinePunctuationOHOS(
   return p;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_PUNCTUATION == 1
+
+#if SHERPA_ONNX_ENABLE_ASR == 1
 const SherpaOnnxOfflineRecognizer *SherpaOnnxCreateOfflineRecognizerOHOS(
     const SherpaOnnxOfflineRecognizerConfig *config,
     NativeResourceManager *mgr) {
@@ -3486,6 +3550,7 @@ const SherpaOnnxOfflineRecognizer *SherpaOnnxCreateOfflineRecognizerOHOS(
 
   return recognizer;
 }
+#endif  // SHERPA_ONNX_ENABLE_ASR == 1
 
 const SherpaOnnxVoiceActivityDetector *
 SherpaOnnxCreateVoiceActivityDetectorOHOS(
@@ -3505,6 +3570,8 @@ SherpaOnnxCreateVoiceActivityDetectorOHOS(
   return p;
 }
 
+#if SHERPA_ONNX_ENABLE_SPEAKER_ID == 1
+
 const SherpaOnnxSpeakerEmbeddingExtractor *
 SherpaOnnxCreateSpeakerEmbeddingExtractorOHOS(
     const SherpaOnnxSpeakerEmbeddingExtractorConfig *config,
@@ -3522,6 +3589,9 @@ SherpaOnnxCreateSpeakerEmbeddingExtractorOHOS(
   return p;
 }
 
+#endif  // SHERPA_ONNX_ENABLE_SPEAKER_ID == 1
+
+#if SHERPA_ONNX_ENABLE_KWS == 1
 const SherpaOnnxKeywordSpotter *SherpaOnnxCreateKeywordSpotterOHOS(
     const SherpaOnnxKeywordSpotterConfig *config, NativeResourceManager *mgr) {
   if (!mgr) {
@@ -3537,6 +3607,7 @@ const SherpaOnnxKeywordSpotter *SherpaOnnxCreateKeywordSpotterOHOS(
 
   return spotter;
 }
+#endif  // SHERPA_ONNX_ENABLE_KWS == 1
 
 #if SHERPA_ONNX_ENABLE_TTS == 1
 const SherpaOnnxOfflineTts *SherpaOnnxCreateOfflineTtsOHOS(
@@ -3561,6 +3632,8 @@ const SherpaOnnxOfflineTts *SherpaOnnxCreateOfflineTtsOHOS(
 }
 #endif  // #if SHERPA_ONNX_ENABLE_TTS == 1
 
+#if SHERPA_ONNX_ENABLE_PUNCTUATION == 1
+
 const SherpaOnnxOfflinePunctuation *SherpaOnnxCreateOfflinePunctuationOHOS(
     const SherpaOnnxOfflinePunctuationConfig *config,
     NativeResourceManager *mgr) {
@@ -3584,6 +3657,8 @@ const SherpaOnnxOfflinePunctuation *SherpaOnnxCreateOfflinePunctuationOHOS(
 
   return punct;
 }
+
+#endif  // SHERPA_ONNX_ENABLE_PUNCTUATION == 1
 
 #if SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION == 1
 const SherpaOnnxOfflineSpeakerDiarization *
@@ -3617,6 +3692,8 @@ SherpaOnnxCreateOfflineSpeakerDiarizationOHOS(
 
 #endif  // #if SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION == 1
 
+#if SHERPA_ONNX_ENABLE_SOURCE_SEPARATION == 1
+
 const SherpaOnnxOfflineSourceSeparation *
 SherpaOnnxCreateOfflineSourceSeparationOHOS(
     const SherpaOnnxOfflineSourceSeparationConfig *config,
@@ -3637,5 +3714,7 @@ SherpaOnnxCreateOfflineSourceSeparationOHOS(
 
   return ss;
 }
+
+#endif  // SHERPA_ONNX_ENABLE_SOURCE_SEPARATION == 1
 
 #endif  // #ifdef __OHOS__
