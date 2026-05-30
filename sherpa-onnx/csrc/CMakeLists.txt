@@ -22,111 +22,13 @@ set(sources
   fst-utils.cc
   homophone-replacer.cc
   hypothesis.cc
-  keyword-spotter-impl.cc
-  keyword-spotter.cc
   lodr-fst.cc
   math.cc
   normal-data-generator.cc
-  offline-canary-model-config.cc
-  offline-canary-model.cc
-  offline-cohere-transcribe-greedy-search-decoder.cc
-  offline-cohere-transcribe-model-config.cc
-  offline-cohere-transcribe-model.cc
-  offline-ctc-fst-decoder-config.cc
-  offline-ctc-fst-decoder.cc
-  offline-ctc-greedy-search-decoder.cc
-  offline-ctc-model.cc
-  offline-dolphin-model-config.cc
-  offline-dolphin-model.cc
-  offline-fire-red-asr-ctc-model-config.cc
-  offline-fire-red-asr-ctc-model.cc
-  offline-fire-red-asr-greedy-search-decoder.cc
-  offline-fire-red-asr-model-config.cc
-  offline-fire-red-asr-model.cc
-  offline-lm-config.cc
-  offline-lm.cc
-  offline-medasr-ctc-model-config.cc
-  offline-medasr-ctc-model.cc
   offline-model-config.cc
-  offline-moonshine-greedy-search-decoder.cc
-  offline-moonshine-model-config.cc
-  offline-moonshine-model-v2.cc
-  offline-moonshine-model.cc
-  offline-moonshine-v2-greedy-search-decoder.cc
-  offline-nemo-enc-dec-ctc-model-config.cc
-  offline-nemo-enc-dec-ctc-model.cc
-  offline-omnilingual-asr-ctc-model-config.cc
-  offline-omnilingual-asr-ctc-model.cc
-  offline-paraformer-greedy-search-decoder.cc
-  offline-paraformer-model-config.cc
-  offline-paraformer-model.cc
-  offline-recognizer-impl.cc
-  offline-recognizer.cc
-  offline-rnn-lm.cc
-  offline-sense-voice-model-config.cc
-  offline-sense-voice-model.cc
-  offline-source-separation-impl.cc
-  offline-source-separation-model-config.cc
-  offline-source-separation-spleeter-model-config.cc
-  offline-source-separation-spleeter-model.cc
-  offline-source-separation-uvr-model-config.cc
-  offline-source-separation-uvr-model.cc
-  offline-source-separation.cc
   offline-stream.cc
-  offline-tdnn-ctc-model.cc
-  offline-tdnn-model-config.cc
-  offline-telespeech-ctc-model.cc
-  offline-transducer-greedy-search-decoder.cc
-  offline-transducer-greedy-search-nemo-decoder.cc
-  offline-transducer-model-config.cc
-  offline-transducer-model.cc
-  offline-transducer-modified-beam-search-decoder.cc
-  offline-transducer-modified-beam-search-nemo-decoder.cc
-  offline-transducer-nemo-model.cc
-  offline-wenet-ctc-model-config.cc
-  offline-wenet-ctc-model.cc
-  offline-whisper-dtw.cc
-  offline-whisper-greedy-search-decoder.cc
-  offline-whisper-model-config.cc
-  offline-whisper-model.cc
-  offline-whisper-timestamp-rules.cc
-  offline-zipformer-ctc-model-config.cc
-  offline-zipformer-ctc-model.cc
-  online-conformer-transducer-model.cc
-  online-ctc-fst-decoder-config.cc
-  online-ctc-fst-decoder.cc
-  online-ctc-greedy-search-decoder.cc
-  online-ctc-model.cc
-  online-ebranchformer-transducer-model.cc
-  online-lm-config.cc
-  online-lm.cc
-  online-lstm-transducer-model.cc
   online-model-config.cc
-  online-nemo-ctc-model-config.cc
-  online-nemo-ctc-model.cc
-  online-paraformer-model-config.cc
-  online-paraformer-model.cc
-  online-recognizer-impl.cc
-  online-recognizer.cc
-  online-rnn-lm.cc
   online-stream.cc
-  online-t-one-ctc-model-config.cc
-  online-t-one-ctc-model.cc
-  online-transducer-decoder.cc
-  online-transducer-greedy-search-decoder.cc
-  online-transducer-greedy-search-nemo-parakeet-unified-decoder.cc
-  online-transducer-greedy-search-nemo-decoder.cc
-  online-transducer-model-config.cc
-  online-transducer-model.cc
-  online-transducer-modified-beam-search-decoder.cc
-  online-transducer-nemo-parakeet-unified-model.cc
-  online-transducer-nemo-model.cc
-  online-wenet-ctc-model-config.cc
-  online-wenet-ctc-model.cc
-  online-zipformer-transducer-model.cc
-  online-zipformer2-ctc-model-config.cc
-  online-zipformer2-ctc-model.cc
-  online-zipformer2-transducer-model.cc
   onnx-utils.cc
   packed-sequence.cc
   pad-sequence.cc
@@ -139,15 +41,12 @@ set(sources
   silero-vad-model-config.cc
   silero-vad-model.cc
   slice.cc
-  spoken-language-identification-impl.cc
-  spoken-language-identification.cc
   stack.cc
   symbol-table.cc
   ten-vad-model-config.cc
   ten-vad-model.cc
   text-utils.cc
   timer.cc
-  transducer-keyword-decoder.cc
   transpose.cc
   unbind.cc
   utils.cc
@@ -159,41 +58,163 @@ set(sources
   wave-writer.cc
 )
 
+if(SHERPA_ONNX_ENABLE_ASR)
+  list(APPEND sources
+    offline-canary-model-config.cc
+    offline-canary-model.cc
+    offline-cohere-transcribe-greedy-search-decoder.cc
+    offline-cohere-transcribe-model-config.cc
+    offline-cohere-transcribe-model.cc
+    offline-ctc-fst-decoder-config.cc
+    offline-ctc-fst-decoder.cc
+    offline-ctc-greedy-search-decoder.cc
+    offline-ctc-model.cc
+    offline-dolphin-model-config.cc
+    offline-dolphin-model.cc
+    offline-fire-red-asr-ctc-model-config.cc
+    offline-fire-red-asr-ctc-model.cc
+    offline-fire-red-asr-greedy-search-decoder.cc
+    offline-fire-red-asr-model-config.cc
+    offline-fire-red-asr-model.cc
+    offline-lm-config.cc
+    offline-lm.cc
+    offline-medasr-ctc-model-config.cc
+    offline-medasr-ctc-model.cc
+    offline-moonshine-greedy-search-decoder.cc
+    offline-moonshine-model-config.cc
+    offline-moonshine-model-v2.cc
+    offline-moonshine-model.cc
+    offline-moonshine-v2-greedy-search-decoder.cc
+    offline-nemo-enc-dec-ctc-model-config.cc
+    offline-nemo-enc-dec-ctc-model.cc
+    offline-omnilingual-asr-ctc-model-config.cc
+    offline-omnilingual-asr-ctc-model.cc
+    offline-paraformer-greedy-search-decoder.cc
+    offline-paraformer-model-config.cc
+    offline-paraformer-model.cc
+    offline-recognizer-impl.cc
+    offline-recognizer.cc
+    offline-rnn-lm.cc
+    offline-sense-voice-model-config.cc
+    offline-sense-voice-model.cc
+    offline-tdnn-ctc-model.cc
+    offline-tdnn-model-config.cc
+    offline-telespeech-ctc-model.cc
+    offline-transducer-greedy-search-decoder.cc
+    offline-transducer-greedy-search-nemo-decoder.cc
+    offline-transducer-model-config.cc
+    offline-transducer-model.cc
+    offline-transducer-modified-beam-search-decoder.cc
+    offline-transducer-modified-beam-search-nemo-decoder.cc
+    offline-transducer-nemo-model.cc
+    offline-wenet-ctc-model-config.cc
+    offline-wenet-ctc-model.cc
+    offline-whisper-dtw.cc
+    offline-whisper-greedy-search-decoder.cc
+    offline-whisper-model-config.cc
+    offline-whisper-model.cc
+    offline-whisper-timestamp-rules.cc
+    offline-zipformer-ctc-model-config.cc
+    offline-zipformer-ctc-model.cc
+    online-conformer-transducer-model.cc
+    online-ctc-fst-decoder-config.cc
+    online-ctc-fst-decoder.cc
+    online-ctc-greedy-search-decoder.cc
+    online-ctc-model.cc
+    online-ebranchformer-transducer-model.cc
+    online-lm-config.cc
+    online-lm.cc
+    online-lstm-transducer-model.cc
+    online-nemo-ctc-model-config.cc
+    online-nemo-ctc-model.cc
+    online-paraformer-model-config.cc
+    online-paraformer-model.cc
+    online-recognizer-impl.cc
+    online-recognizer.cc
+    online-rnn-lm.cc
+    online-t-one-ctc-model-config.cc
+    online-t-one-ctc-model.cc
+    online-transducer-decoder.cc
+    online-transducer-greedy-search-decoder.cc
+    online-transducer-greedy-search-nemo-parakeet-unified-decoder.cc
+    online-transducer-greedy-search-nemo-decoder.cc
+    online-transducer-model-config.cc
+    online-transducer-model.cc
+    online-transducer-modified-beam-search-decoder.cc
+    online-transducer-nemo-parakeet-unified-model.cc
+    online-transducer-nemo-model.cc
+    online-wenet-ctc-model-config.cc
+    online-wenet-ctc-model.cc
+    online-zipformer-transducer-model.cc
+    online-zipformer2-ctc-model-config.cc
+    online-zipformer2-ctc-model.cc
+    online-zipformer2-transducer-model.cc
+    spoken-language-identification-impl.cc
+    spoken-language-identification.cc
+    transducer-keyword-decoder.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_KWS)
+  list(APPEND sources
+    keyword-spotter-impl.cc
+    keyword-spotter.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_SOURCE_SEPARATION)
+  list(APPEND sources
+    offline-source-separation-impl.cc
+    offline-source-separation-model-config.cc
+    offline-source-separation-spleeter-model-config.cc
+    offline-source-separation-spleeter-model.cc
+    offline-source-separation-uvr-model-config.cc
+    offline-source-separation-uvr-model.cc
+    offline-source-separation.cc
+  )
+endif()
+
 # speaker embedding extractor
-list(APPEND sources
-  speaker-embedding-extractor-impl.cc
-  speaker-embedding-extractor-model.cc
-  speaker-embedding-extractor-nemo-model.cc
-  speaker-embedding-extractor.cc
-  speaker-embedding-manager.cc
-)
+if(SHERPA_ONNX_ENABLE_SPEAKER_ID)
+  list(APPEND sources
+    speaker-embedding-extractor-impl.cc
+    speaker-embedding-extractor-model.cc
+    speaker-embedding-extractor-nemo-model.cc
+    speaker-embedding-extractor.cc
+    speaker-embedding-manager.cc
+  )
+endif()
 
 # audio tagging
-list(APPEND sources
-  audio-tagging-impl.cc
-  audio-tagging-label-file.cc
-  audio-tagging-model-config.cc
-  audio-tagging.cc
-  offline-ced-model.cc
-  offline-zipformer-audio-tagging-model-config.cc
-  offline-zipformer-audio-tagging-model.cc
-)
+if(SHERPA_ONNX_ENABLE_AUDIO_TAGGING)
+  list(APPEND sources
+    audio-tagging-impl.cc
+    audio-tagging-label-file.cc
+    audio-tagging-model-config.cc
+    audio-tagging.cc
+    offline-ced-model.cc
+    offline-zipformer-audio-tagging-model-config.cc
+    offline-zipformer-audio-tagging-model.cc
+  )
+endif()
 
 list(APPEND sources
   qnn-config.cc
 )
 
 # punctuation
-list(APPEND sources
-  offline-ct-transformer-model.cc
-  offline-punctuation-impl.cc
-  offline-punctuation-model-config.cc
-  offline-punctuation.cc
-  online-cnn-bilstm-model.cc
-  online-punctuation-impl.cc
-  online-punctuation-model-config.cc
-  online-punctuation.cc
-)
+if(SHERPA_ONNX_ENABLE_PUNCTUATION)
+  list(APPEND sources
+    offline-ct-transformer-model.cc
+    offline-punctuation-impl.cc
+    offline-punctuation-model-config.cc
+    offline-punctuation.cc
+    online-cnn-bilstm-model.cc
+    online-punctuation-impl.cc
+    online-punctuation-model-config.cc
+    online-punctuation.cc
+  )
+endif()
 if(SHERPA_ONNX_ENABLE_RKNN)
   list(APPEND sources
     ./rknn/context-blocking-queue-rknn.cc
@@ -257,16 +278,18 @@ if(SHERPA_ONNX_ENABLE_QNN)
   )
 endif()
 
-list(APPEND sources
-  offline-funasr-nano-model-config.cc
-  offline-funasr-nano-model.cc
-  offline-recognizer-funasr-nano-impl.cc
-  funasr-nano-tokenizer.cc
-  offline-qwen3-asr-model-config.cc
-  offline-qwen3-asr-model.cc
-  offline-recognizer-qwen3-asr-impl.cc
-  qwen-asr-tokenizer.cc
-)
+if(SHERPA_ONNX_ENABLE_ASR)
+  list(APPEND sources
+    offline-funasr-nano-model-config.cc
+    offline-funasr-nano-model.cc
+    offline-recognizer-funasr-nano-impl.cc
+    funasr-nano-tokenizer.cc
+    offline-qwen3-asr-model-config.cc
+    offline-qwen3-asr-model.cc
+    offline-recognizer-qwen3-asr-impl.cc
+    qwen-asr-tokenizer.cc
+  )
+endif()
 
 if(SHERPA_ONNX_ENABLE_TTS)
   list(APPEND sources
@@ -304,17 +327,19 @@ if(SHERPA_ONNX_ENABLE_TTS)
   )
 endif()
 
-list(APPEND sources
-  offline-speech-denoiser-dpdfnet-model-config.cc
-  offline-speech-denoiser-dpdfnet-model.cc
-  offline-speech-denoiser-gtcrn-model-config.cc
-  offline-speech-denoiser-gtcrn-model.cc
-  offline-speech-denoiser-impl.cc
-  offline-speech-denoiser-model-config.cc
-  offline-speech-denoiser.cc
-  online-speech-denoiser-impl.cc
-  online-speech-denoiser.cc
-)
+if(SHERPA_ONNX_ENABLE_DENOISER)
+  list(APPEND sources
+    offline-speech-denoiser-dpdfnet-model-config.cc
+    offline-speech-denoiser-dpdfnet-model.cc
+    offline-speech-denoiser-gtcrn-model-config.cc
+    offline-speech-denoiser-gtcrn-model.cc
+    offline-speech-denoiser-impl.cc
+    offline-speech-denoiser-model-config.cc
+    offline-speech-denoiser.cc
+    online-speech-denoiser-impl.cc
+    online-speech-denoiser.cc
+  )
+endif()
 
 if(SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION)
   list(APPEND sources

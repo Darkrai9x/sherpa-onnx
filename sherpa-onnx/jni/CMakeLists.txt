@@ -11,27 +11,57 @@ if(NOT DEFINED ANDROID_ABI)
 endif()
 
 set(sources
-  audio-tagging.cc
   common.cc
   jni.cc
-  keyword-spotter.cc
-  offline-punctuation.cc
-  offline-recognizer.cc
-  offline-speech-denoiser.cc
   offline-stream.cc
-  online-speech-denoiser.cc
-  online-punctuation.cc
-  online-recognizer.cc
   online-stream.cc
-  speaker-embedding-extractor.cc
-  speaker-embedding-manager.cc
-  speech-denoiser.cc
-  spoken-language-identification.cc
   version.cc
   voice-activity-detector.cc
   wave-reader.cc
   wave-writer.cc
 )
+
+if(SHERPA_ONNX_ENABLE_ASR)
+  list(APPEND sources
+    offline-recognizer.cc
+    online-recognizer.cc
+    spoken-language-identification.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_KWS)
+  list(APPEND sources
+    keyword-spotter.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_AUDIO_TAGGING)
+  list(APPEND sources
+    audio-tagging.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_PUNCTUATION)
+  list(APPEND sources
+    offline-punctuation.cc
+    online-punctuation.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_DENOISER)
+  list(APPEND sources
+    offline-speech-denoiser.cc
+    online-speech-denoiser.cc
+    speech-denoiser.cc
+  )
+endif()
+
+if(SHERPA_ONNX_ENABLE_SPEAKER_ID)
+  list(APPEND sources
+    speaker-embedding-extractor.cc
+    speaker-embedding-manager.cc
+  )
+endif()
 
 if(SHERPA_ONNX_ENABLE_TTS)
   list(APPEND sources

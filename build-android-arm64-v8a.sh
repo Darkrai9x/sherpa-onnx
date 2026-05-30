@@ -12,8 +12,24 @@ set -ex
 # If BUILD_SHARED_LIBS is ON, then you need to copy both libsherpa-onnx-jni.so
 # and libonnxruntime.so to your Android projects
 #
-if [ -z $BUILD_SHARED_LIBS ]; then
-  BUILD_SHARED_LIBS=ON
+BUILD_SHARED_LIBS=OFF
+SHERPA_ONNX_ENABLE_TTS=ON
+SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION=OFF
+SHERPA_ONNX_ENABLE_BINARY=OFF
+SHERPA_ONNX_ENABLE_JNI=ON
+SHERPA_ONNX_ENABLE_C_API=OFF
+SHERPA_ONNX_ENABLE_ASR=OFF
+SHERPA_ONNX_ENABLE_DENOISER=OFF
+SHERPA_ONNX_ENABLE_SOURCE_SEPARATION=OFF
+SHERPA_ONNX_ENABLE_AUDIO_TAGGING=OFF
+SHERPA_ONNX_ENABLE_SPEAKER_ID=OFF
+SHERPA_ONNX_ENABLE_KWS=OFF
+SHERPA_ONNX_ENABLE_PUNCTUATION=OFF
+SHERPA_ONNX_DISABLE_LOG=ON
+
+SHERPA_ONNX_DISABLE_LOG_FLAGS=""
+if [ "$SHERPA_ONNX_DISABLE_LOG" == ON ]; then
+  SHERPA_ONNX_DISABLE_LOG_FLAGS="-DCMAKE_CXX_FLAGS=-DSHERPA_ONNX_DISABLE_LOG=1 -DCMAKE_C_FLAGS=-DSHERPA_ONNX_DISABLE_LOG=1"
 fi
 
 if [ $BUILD_SHARED_LIBS == ON ]; then
@@ -61,26 +77,14 @@ cd $dir
 #   -DANDROID
 
 if [ -z $ANDROID_NDK ]; then
-  ANDROID_NDK=/star-fj/fangjun/software/android-sdk/ndk/22.1.7171670
-  if [ $BUILD_SHARED_LIBS == OFF ]; then
-    ANDROID_NDK=/star-fj/fangjun/software/android-sdk/ndk/27.0.11718014
-  fi
-  # or use
-  # ANDROID_NDK=/star-fj/fangjun/software/android-ndk
-  #
-  # Inside the $ANDROID_NDK directory, you can find a binary ndk-build
-  # and some other files like the file "build/cmake/android.toolchain.cmake"
+  ANDROID_NDK=/c/Users/LongVu/AppData/Local/Android/Sdk/ndk/27.0.12077973
+fi
 
-  if [ ! -d $ANDROID_NDK ]; then
-    # For macOS, I have installed Android Studio, select the menu
-    # Tools -> SDK manager -> Android SDK
-    # and set "Android SDK location" to /Users/fangjun/software/my-android
-    ANDROID_NDK=/Users/fangjun/software/my-android/ndk/22.1.7171670
-
-    if [ $BUILD_SHARED_LIBS == OFF ]; then
-      ANDROID_NDK=/Users/fangjun/software/my-android/ndk/27.0.11718014
-    fi
-  fi
+if [ -z $SHERPA_CMAKE ]; then
+  SHERPA_CMAKE=/c/Users/LongVu/AppData/Local/Android/Sdk/cmake/3.31.6/bin/cmake.exe
+fi
+if [ -z $SHERPA_NINJA ]; then
+  SHERPA_NINJA=/c/Users/LongVu/AppData/Local/Android/Sdk/cmake/3.31.6/bin/ninja.exe
 fi
 
 if [ ! -d $ANDROID_NDK ]; then
@@ -101,7 +105,7 @@ elif [ "$BUILD_SHARED_LIBS" == ON ]; then
   if [ ! -f $onnxruntime_version/jni/arm64-v8a/libonnxruntime.so ]; then
     mkdir -p $onnxruntime_version
     pushd $onnxruntime_version
-    wget -c -q https://github.com/csukuangfj/onnxruntime-libs/releases/download/v${onnxruntime_version}/onnxruntime-android-${onnxruntime_version}.zip
+    curl -L -o onnxruntime-android-${onnxruntime_version}.zip https://github.com/csukuangfj/onnxruntime-libs/releases/download/v${onnxruntime_version}/onnxruntime-android-${onnxruntime_version}.zip
     unzip onnxruntime-android-${onnxruntime_version}.zip
     rm onnxruntime-android-${onnxruntime_version}.zip
     popd
@@ -111,7 +115,7 @@ elif [ "$BUILD_SHARED_LIBS" == ON ]; then
   export SHERPA_ONNXRUNTIME_INCLUDE_DIR=$dir/$onnxruntime_version/headers/
 else
   if [ ! -f ${onnxruntime_version}-static/lib/libonnxruntime.a ]; then
-    wget -c -q https://github.com/csukuangfj/onnxruntime-libs/releases/download/v${onnxruntime_version}/onnxruntime-android-arm64-v8a-static_lib-${onnxruntime_version}.zip
+    curl -L -o onnxruntime-android-arm64-v8a-static_lib-${onnxruntime_version}.zip https://github.com/csukuangfj/onnxruntime-libs/releases/download/v${onnxruntime_version}/onnxruntime-android-arm64-v8a-static_lib-${onnxruntime_version}.zip
     unzip onnxruntime-android-arm64-v8a-static_lib-${onnxruntime_version}.zip
     rm onnxruntime-android-arm64-v8a-static_lib-${onnxruntime_version}.zip
     mv onnxruntime-android-arm64-v8a-static_lib-${onnxruntime_version} ${onnxruntime_version}-static
@@ -145,32 +149,22 @@ if [ $SHERPA_ONNX_ENABLE_RKNN == ON ]; then
   export CPLUS_INCLUDE_PATH=$PWD/librknnrt-android/v$rknn_version/include:$CPLUS_INCLUDE_PATH
 fi
 
-if [ -z $SHERPA_ONNX_ENABLE_TTS ]; then
-  SHERPA_ONNX_ENABLE_TTS=ON
-fi
-
-if [ -z $SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION ]; then
-  SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION=ON
-fi
-
-if [ -z $SHERPA_ONNX_ENABLE_BINARY ]; then
-  SHERPA_ONNX_ENABLE_BINARY=OFF
-fi
-
-if [ -z $SHERPA_ONNX_ENABLE_C_API ]; then
-  SHERPA_ONNX_ENABLE_C_API=OFF
-fi
-
 if [ -z $SHERPA_ONNX_ANDROID_PLATFORM ]; then
   SHERPA_ONNX_ANDROID_PLATFORM=android-21
 fi
 
-if [ -z $SHERPA_ONNX_ENABLE_JNI ]; then
-  SHERPA_ONNX_ENABLE_JNI=ON
-fi
-
-cmake -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" \
+"$SHERPA_CMAKE" -G Ninja \
+    -DCMAKE_MAKE_PROGRAM="$SHERPA_NINJA" \
+    -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF \
+    -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" \
     -DSHERPA_ONNX_ENABLE_TTS=$SHERPA_ONNX_ENABLE_TTS \
+    -DSHERPA_ONNX_ENABLE_ASR=$SHERPA_ONNX_ENABLE_ASR \
+    -DSHERPA_ONNX_ENABLE_DENOISER=$SHERPA_ONNX_ENABLE_DENOISER \
+    -DSHERPA_ONNX_ENABLE_SOURCE_SEPARATION=$SHERPA_ONNX_ENABLE_SOURCE_SEPARATION \
+    -DSHERPA_ONNX_ENABLE_AUDIO_TAGGING=$SHERPA_ONNX_ENABLE_AUDIO_TAGGING \
+    -DSHERPA_ONNX_ENABLE_SPEAKER_ID=$SHERPA_ONNX_ENABLE_SPEAKER_ID \
+    -DSHERPA_ONNX_ENABLE_KWS=$SHERPA_ONNX_ENABLE_KWS \
+    -DSHERPA_ONNX_ENABLE_PUNCTUATION=$SHERPA_ONNX_ENABLE_PUNCTUATION \
     -DSHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION=$SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION \
     -DSHERPA_ONNX_ENABLE_BINARY=$SHERPA_ONNX_ENABLE_BINARY \
     -DBUILD_PIPER_PHONMIZE_EXE=OFF \
@@ -190,16 +184,17 @@ cmake -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" 
     -DSHERPA_ONNX_ENABLE_RKNN=$SHERPA_ONNX_ENABLE_RKNN \
     -DSHERPA_ONNX_ENABLE_QNN=$SHERPA_ONNX_ENABLE_QNN \
     -DANDROID_ABI="arm64-v8a" \
-    -DANDROID_PLATFORM=$SHERPA_ONNX_ANDROID_PLATFORM ..
+    -DANDROID_PLATFORM=$SHERPA_ONNX_ANDROID_PLATFORM \
+    $SHERPA_ONNX_DISABLE_LOG_FLAGS \
+    ..
 
     # By default, it links to libc++_static.a
     # -DANDROID_STL=c++_shared \
 
 # Please use -DANDROID_PLATFORM=android-27 if you want to use Android NNAPI
 
-# make VERBOSE=1 -j4
-make -j4
-make install/strip
+"$SHERPA_CMAKE" --build . -j4
+"$SHERPA_CMAKE" --install . --strip
 if [ "$BUILD_SHARED_LIBS" == ON ]; then
   cp -fv "$SHERPA_ONNXRUNTIME_LIB_DIR/libonnxruntime.so" install/lib
 fi

@@ -68,6 +68,13 @@ option(SHERPA_ONNX_ENABLE_WASM_NODEJS "Whether to enable WASM for NodeJS" OFF)
 option(SHERPA_ONNX_ENABLE_WASM_SPEECH_ENHANCEMENT "Whether to enable WASM for speech enhancement" OFF)
 option(SHERPA_ONNX_ENABLE_BINARY "Whether to build binaries" ${SUGGEST_BUILD_BINARIES})
 option(SHERPA_ONNX_ENABLE_TTS "Whether to build TTS related code" ON)
+option(SHERPA_ONNX_ENABLE_ASR "Whether to build ASR related code" ON)
+option(SHERPA_ONNX_ENABLE_DENOISER "Whether to build speech denoiser code" ON)
+option(SHERPA_ONNX_ENABLE_SOURCE_SEPARATION "Whether to build source separation code" ON)
+option(SHERPA_ONNX_ENABLE_AUDIO_TAGGING "Whether to build audio tagging code" ON)
+option(SHERPA_ONNX_ENABLE_SPEAKER_ID "Whether to build speaker embedding/ID code" ON)
+option(SHERPA_ONNX_ENABLE_KWS "Whether to build keyword spotter code" ON)
+option(SHERPA_ONNX_ENABLE_PUNCTUATION "Whether to build punctuation code" ON)
 option(SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION "Whether to build speaker diarization related code" ON)
 option(SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY "True to link libstdc++ statically. Used only when BUILD_SHARED_LIBS is OFF on Linux" ON)
 option(SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE "True to use pre-installed onnxruntime if available" ON)
@@ -256,7 +263,7 @@ if(NOT WIN32)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-if(BUILD_SHARED_LIBS AND NOT CMAKE_SYSTEM_NAME STREQUAL iOS AND CMAKE_BUILD_TYPE STREQUAL Release)
+if(BUILD_SHARED_LIBS AND NOT CMAKE_SYSTEM_NAME STREQUAL iOS AND NOT CMAKE_SYSTEM_NAME STREQUAL Android AND CMAKE_BUILD_TYPE STREQUAL Release)
   # Don't use LTO for iOS since it causes the following error
   # error: unable to find any architecture information in the binary
   # at '/Users/fangjun/open-source/sherpa-onnx/build-ios/build/os64/sherpa-onnx.a':

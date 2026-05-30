@@ -22,7 +22,9 @@
 #define LOG_TAG "sherpa_onnx"
 #endif
 
-#if __ANDROID_API__ >= 8
+#if defined(SHERPA_ONNX_DISABLE_LOG) && SHERPA_ONNX_DISABLE_LOG
+#define SHERPA_ONNX_LOGE(...) ((void)0)
+#elif __ANDROID_API__ >= 8
 #include "android/log.h"
 #define SHERPA_ONNX_LOGE(...)                                                  \
   do {                                                                         \
